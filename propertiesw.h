@@ -28,7 +28,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QMimeDatabase>
 #include <QMediaMetaData>
 
-#include "utilities.h"
+#include <cprime/utilities.h>
 
 
 namespace Ui {

@@ -52,9 +52,9 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QShortcut>
 #include <QListWidgetItem>
 
-#include "utilities.h"
-#include "globalfunctions.h"
-#include "settingsmanage.h"
+#include <cprime/utilities.h>
+#include <cprime/globalfunctions.h>
+#include <cprime/settingsmanage.h>
 //#include "bookmarks/bookmarks.h"
 //#include "corearchiver/corearchiver.h"
 

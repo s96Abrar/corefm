@@ -28,7 +28,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QFormLayout>
 #include <QCompleter>
 
-#include "utilities.h"
+#include <cprime/utilities.h>
 
 
 class ApplicationDialog : public QDialog {

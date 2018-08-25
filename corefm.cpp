@@ -1039,8 +1039,8 @@ void corefm::progressFinished(int ret,QStringList newFiles)
         clearCutItems();
     }
 
-    if ( ret == 1 ) messageEngine( "Paste failed\nDo you have write permissions?", Utilities::MessageType::Warning );
-    if ( ret == 2 ) messageEngine( "Too big!\nThere is not enough space!", Utilities::MessageType::Warning );
+    if ( ret == 1 ) Utilities::messageEngine( "Paste failed\nDo you have write permissions?", Utilities::MessageType::Warning );
+    if ( ret == 2 ) Utilities::messageEngine( "Too big!\nThere is not enough space!", Utilities::MessageType::Warning );
 }
 
 

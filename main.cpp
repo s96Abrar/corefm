@@ -14,13 +14,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program; if not, see {http://www.gnu.org/licenses/}. */
 
-#include "utilities.h"
-#include "settingsmanage.h"
 #include "corefm.h"
 
 #include <QApplication>
 #include <QFont>
 #include <QStyleFactory>
+
+#include <cprime/utilities.h>
+#include <cprime/settingsmanage.h>
 
 
 void startSetup()
@@ -56,7 +57,27 @@ int main(int argc, char *argv[])
     app.setOrganizationName("CoreBox");
     app.setApplicationName("CoreFM");
 
+    QCommandLineParser parser;
+    parser.addHelpOption();
+    parser.addVersionOption();
+
+    const QString files = "[FILE1, FILE2,...]";
+    parser.addPositionalArgument("files", files, files);
+
+    parser.process(app);
+
+    QStringList args = parser.positionalArguments();
+
+    QStringList paths;
+    foreach (QString arg, args) {
+      QFileInfo info(arg);
+      paths.push_back(info.absoluteFilePath());
+    }
+
     corefm e;
+    if (paths.count()) {
+        e.sendFiles(paths);
+    }
     e.show();
 
     return app.exec();

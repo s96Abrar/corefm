@@ -24,7 +24,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QtDBus/QDBusConnection>
 #include <QXmlStreamReader>
 
-#include "utilities.h"
+#include <cprime/utilities.h>
 
 
 class UDisks2Block;
