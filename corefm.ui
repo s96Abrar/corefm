@@ -2,11 +2,14 @@
 <ui version="4.0">
  <class>corefm</class>
  <widget class="QWidget" name="corefm">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1096</width>
+    <width>1115</width>
     <height>514</height>
    </rect>
   </property>
@@ -16,9 +19,6 @@
   <property name="windowIcon">
    <iconset resource="icons.qrc">
     <normaloff>:/icons/CoreFM.svg</normaloff>:/icons/CoreFM.svg</iconset>
-  </property>
-  <property name="windowOpacity">
-   <double>0.000000000000000</double>
   </property>
   <property name="styleSheet">
    <string notr="true"/>

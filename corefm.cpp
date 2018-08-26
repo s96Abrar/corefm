@@ -23,7 +23,7 @@ corefm::corefm(QWidget *parent) :QWidget(parent),ui(new Ui::corefm)
     ui->setupUi(this);
 
     // set stylesheet from style.qrc
-    setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/CoreFM.qss"));
+    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::CoreFMStyle));
 
     // set window size
     int x = static_cast<int>(Utilities::screensize().width()  * .8);
@@ -34,7 +34,6 @@ corefm::corefm(QWidget *parent) :QWidget(parent),ui(new Ui::corefm)
     loadSettings();
     lateStart();
     shotcuts();
-
 }
 
 corefm::~corefm()
@@ -578,7 +577,7 @@ void corefm::dragLauncher(const QMimeData *data, const QString &newPath,myModel:
       QMessageBox box;
       box.setWindowTitle(tr("What do you want to do?"));
       box.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
-      box.setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/Dialog.qss"));
+      box.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
       QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
       QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
       QAbstractButton *link = box.addButton(tr("Link here"), QMessageBox::ActionRole);
@@ -655,7 +654,7 @@ void corefm::pasteLauncher(const QList<QUrl> &files, const QString &newPath,cons
           QString msg = QString("<b>%1</b><p>Already exists!<p>What do you want to do?").arg(newPath + QDir::separator() + temp.fileName());
           QMessageBox message(QMessageBox::Question, tr("Existing folder"), msg, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
           message.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
-          message.setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/Dialog.qss"));
+          message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
           message.button(QMessageBox::Yes)->setText(tr("Merge"));
           message.button(QMessageBox::No)->setText(tr("Replace"));
 
@@ -1002,7 +1001,7 @@ int corefm::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2)
                                  | QMessageBox::YesToAll | QMessageBox::No
                                  | QMessageBox::NoToAll | QMessageBox::Cancel);
     message.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
-    message.setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/Dialog.qss"));
+    message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
 
     return message.exec();
 }
@@ -1520,7 +1519,7 @@ void corefm::on_actionDelete_triggered()
               QString msg = tr("Are you sure you want to delete <p><b>\"") + file.filePath() + "</b>?";
               QMessageBox message(QMessageBox::Question, title, msg,QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll);
               message.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
-              message.setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/Dialog.qss"));
+              message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
               int ret = message.exec();
               if (ret == QMessageBox::YesToAll) yesToAll = true;
               if (ret == QMessageBox::No) return;
@@ -1874,7 +1873,7 @@ void corefm::on_actionTrash_it_triggered()
 {
     if (selectItemCount != 0) {
         // Function from utilities.cpp
-        Utilities::moveToTrash(curIndex.filePath());
+        Utilities::moveToTrash(QStringList() << curIndex.filePath());
         on_actionRefresh_triggered();
     }
 }

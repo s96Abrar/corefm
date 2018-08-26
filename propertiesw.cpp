@@ -23,7 +23,7 @@ propertiesw::propertiesw(const QString paths,QWidget *parent) :QWidget(parent),u
     ui->setupUi(this);
 
     // set stylesheet from style.qrc
-    setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/Properties.qss"));
+    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::PropertiesStyle));
 
     // set window size
     int x = static_cast<int>(Utilities::screensize().width()  * .27);
