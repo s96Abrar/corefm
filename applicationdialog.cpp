@@ -25,7 +25,7 @@ ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent)
     this->setMinimumSize(320, 320);
 
     // set stylesheet from style.qrc
-    setStyleSheet(Utilities::getStylesheetFileContent(":/appStyle/style/Dialog.qss"));
+    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
 
     // Creates app list view
     appList = new QTreeWidget(this);

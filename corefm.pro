@@ -4,13 +4,13 @@
 #
 #-------------------------------------------------
 
-QT       += core gui widgets  multimedia multimediawidgets  dbus
+QT       += core gui widgets multimedia multimediawidgets dbus
 
 TARGET = corefm
 TEMPLATE = app
 
 # library for theme
-unix:!macx: LIBS += /usr/lib/libcprime.a
+unix:!macx: LIBS += -lcprime
 
 FORMS += \
     corefm.ui \
