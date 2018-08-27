@@ -20,7 +20,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 ApplicationDialog::ApplicationDialog(QWidget *parent) : QDialog(parent)
 {
     // Title and size
-    this->setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
+    this->setWindowIcon(QIcon(":/icons/CoreFM.svg"));
     this->setWindowTitle(tr("Select application"));
     this->setMinimumSize(320, 320);
 

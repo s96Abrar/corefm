@@ -24,7 +24,4 @@
         <file>icons/CoreFM.svg</file>
         <file>icons/new_page.svg</file>
     </qresource>
-    <qresource prefix="/other">
-        <file>icons/background.png</file>
-    </qresource>
 </RCC>

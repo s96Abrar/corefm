@@ -415,6 +415,13 @@ void corefm::dirLoaded()
         modelList->setMode(true);
         QtConcurrent::run(modelList, &myModel::loadThumbs, items);
     }
+
+    QString currentpath(QDir::homePath() + "/.local/share/Trash/files");
+    if((curIndex.absoluteFilePath().compare(currentpath) == 0) && (items.count( ) != 0 )){
+        ui->emptyTrash->setVisible(true);
+    } else {
+        ui->emptyTrash->setVisible(false);
+    }
 }
 
 void corefm::thumbUpdate(QModelIndex index)
@@ -576,7 +583,7 @@ void corefm::dragLauncher(const QMimeData *data, const QString &newPath,myModel:
     if (dragMode == myModel::DM_UNKNOWN) {
       QMessageBox box;
       box.setWindowTitle(tr("What do you want to do?"));
-      box.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
+      box.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
       box.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
       QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
       QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
@@ -653,7 +660,7 @@ void corefm::pasteLauncher(const QList<QUrl> &files, const QString &newPath,cons
         if (temp.isDir() && QFileInfo(newPath + QDir::separator() + temp.fileName()).exists()) {
           QString msg = QString("<b>%1</b><p>Already exists!<p>What do you want to do?").arg(newPath + QDir::separator() + temp.fileName());
           QMessageBox message(QMessageBox::Question, tr("Existing folder"), msg, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-          message.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
+          message.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
           message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
           message.button(QMessageBox::Yes)->setText(tr("Merge"));
           message.button(QMessageBox::No)->setText(tr("Replace"));
@@ -1000,7 +1007,7 @@ int corefm::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2)
     QMessageBox message(QMessageBox::Question, tr("Replace"), t, QMessageBox::Yes
                                  | QMessageBox::YesToAll | QMessageBox::No
                                  | QMessageBox::NoToAll | QMessageBox::Cancel);
-    message.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
+    message.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
     message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
 
     return message.exec();
@@ -1518,7 +1525,7 @@ void corefm::on_actionDelete_triggered()
               QString title = tr("Careful");
               QString msg = tr("Are you sure you want to delete <p><b>\"") + file.filePath() + "</b>?";
               QMessageBox message(QMessageBox::Question, title, msg,QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll);
-              message.setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
+              message.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
               message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
               int ret = message.exec();
               if (ret == QMessageBox::YesToAll) yesToAll = true;
@@ -1661,6 +1668,7 @@ void corefm::on_actionPaste_triggered()
     pasteLauncher(QApplication::clipboard()->mimeData(), newPath, cutList);
     ui->paste->setVisible(false);
     on_actionRefresh_triggered();
+    QApplication::clipboard()->clear();
     // Function from utilities.cpp
     Utilities::messageEngine("Paste Completed.", Utilities::MessageType::Info);
 }
@@ -1833,7 +1841,6 @@ void corefm::on_STrash_clicked()
     QModelIndex i = modelTree->mapFromSource(modelList->index(QDir::homePath() + "/.local/share/Trash/files"));
     ui->viewDir->setCurrentIndex(i);
     on_actionRefresh_triggered();
-    ui->emptyTrash->setVisible(1);
 
 //    coreterminal *l;
 //    l = new coreterminal(QDir::homePath() ,"htop");
@@ -1847,8 +1854,9 @@ void corefm::on_STrash_clicked()
 
 void corefm::on_SBookMarkIt_clicked()
 {
-    const QString path(curIndex.filePath());
-    GlobalFunc::appEngines("BookMarkIt",path);
+    const QString workFilePath(curIndex.filePath());
+    bookmarkDialog bk;
+    bk.callBookMarkDialog(this,workFilePath);
 }
 
 void corefm::on_Tools_clicked(bool checked)
@@ -1897,7 +1905,7 @@ void corefm::on_showHidden_clicked(bool checked)
 void corefm::on_searchHere_clicked()
 {
     const QString folderPath(ui->pathEdit->itemText(0));
-    GlobalFunc::appEngines("Search", folderPath);
+    GlobalFunc::systemAppOpener("Search", folderPath);
 }
 
 void corefm::on_actionExtract_Here_triggered()
@@ -1923,6 +1931,7 @@ void corefm::on_emptyTrash_clicked()
 {
     on_actionSelectAll_triggered();
     on_actionDelete_triggered();
+    on_actionRefresh_triggered();
 }
 
 void corefm::blockDevicesChanged()
@@ -2253,7 +2262,7 @@ void corefm::on_action_Rename_triggered()
 void corefm::on_actionCoreRenamer_triggered()
 {
     const QString path(curIndex.filePath());
-    GlobalFunc::appEngines("CoreRenamer", path);
+    GlobalFunc::systemAppOpener("CoreRenamer", path);
 }
 
 QString corefm::gCurrentPath(int index)

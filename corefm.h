@@ -55,7 +55,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <cprime/utilities.h>
 #include <cprime/globalfunctions.h>
 #include <cprime/settingsmanage.h>
-//#include "bookmarks/bookmarks.h"
+#include <cprime/bookmarkdialog.h>
 //#include "corearchiver/corearchiver.h"
 
 namespace Ui {

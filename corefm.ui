@@ -9,7 +9,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1115</width>
+    <width>1145</width>
     <height>514</height>
    </rect>
   </property>
@@ -1539,8 +1539,8 @@
   </action>
   <action name="actionNewPage">
    <property name="icon">
-    <iconset>
-     <normaloff>:/icons/new_tab.svg</normaloff>:/icons/new_tab.svg</iconset>
+    <iconset resource="icons.qrc">
+     <normaloff>:/icons/new_page.svg</normaloff>:/icons/new_page.svg</iconset>
    </property>
    <property name="text">
     <string>NewPage</string>
@@ -1634,10 +1634,6 @@
    </property>
   </action>
   <action name="actionCoreRenamer">
-   <property name="icon">
-    <iconset>
-     <normaloff>:/app/icons/app-icons/CoreRenemer.svg</normaloff>:/app/icons/app-icons/CoreRenemer.svg</iconset>
-   </property>
    <property name="text">
     <string>CoreRenamer</string>
    </property>

@@ -20,7 +20,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 myProgressDialog::myProgressDialog(QString title)
 {
    setWindowTitle(title);
-   setWindowIcon(QIcon(":/app/icons/app-icons/CoreFM.svg"));
+   setWindowIcon(QIcon(":/icons/CoreFM.svg"));
    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
 
 
