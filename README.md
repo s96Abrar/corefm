@@ -11,6 +11,7 @@ An app of CoreApps family.CoreFM is a filemanager.
 
 ### Dependencies:
 * qt5
+* qt5-multimedia
 * libcprime
 
 ## Tested In
