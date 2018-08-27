@@ -82,7 +82,7 @@ unix {
         desktop.path = $$PREFIX/share/applications/
         desktop.files = "CoreFM.desktop"
 
-        icons.path = $$PREFIX/share/icons/CoreApps/
+        icons.path = $$PREFIX/share/coreapps/icons/
         icons.files = icons/CoreFM.svg
 
         INSTALLS += target icons desktop
