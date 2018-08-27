@@ -1,7 +1,7 @@
 # CoreFM
 An app of CoreApps family.CoreFM is a filemanager.
 
-<img src="docs/screenshots/CoreFM.png" width="500">
+<img src="CoreFM.png" width="500">
 
 ### Download
 
