@@ -25,7 +25,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "fileutils.h"
 #include "mimeutils.h"
 #include "applicationdialog.h"
-#include "udisks2.h"
+//#include "udisks2.h"
 
 #include <QWidget>
 #include <QSettings>
@@ -56,6 +56,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <cprime/globalfunctions.h>
 #include <cprime/settingsmanage.h>
 #include <cprime/bookmarkdialog.h>
+#include <csys/udisks2.h>
 //#include "corearchiver/corearchiver.h"
 
 namespace Ui {
@@ -71,10 +72,8 @@ public:
     ~corefm();
 
     void sendFiles(const QStringList &paths);
-
     void goTo(const QString path);
     QString gCurrentPath(int index);
-
     myModel *modelList;
 
 protected:
@@ -163,7 +162,6 @@ private slots:
     void on_actionItemsToText_triggered();
     void on_viewMode_clicked();
     void on_actionCreate_Shortcut_triggered();
-
     void on_actionNew_Window_triggered();
 
 private:

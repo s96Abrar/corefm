@@ -59,6 +59,7 @@ void propertiesw::general()
     this->setWindowTitle("Properties - " + info.fileName() );
 
     ui->fileTitle->setIcon(Utilities::getFileIcon(info.filePath()));
+//    ui->fileTitle->setIcon(FileUtils::searchAppIcon(info.filePath()));
 
     if(info.isFile()){
         ui->type->setText(littleinfo + " , " + extrainfo );

@@ -19,6 +19,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 
 #include "mymodel.h"
 #include "fileutils.h"
+#include "desktopfile.h"
 
 #include <QWidget>
 #include <QImageReader>
@@ -59,6 +60,7 @@ private:
     QString permString;
     QFileInfo info;
     QMediaPlayer *m_player;
+    DesktopFile appName;
 
     void permission();
     void general();

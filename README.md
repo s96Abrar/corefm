@@ -13,6 +13,7 @@ An app of CoreApps family.CoreFM is a filemanager.
 * qt5
 * qt5-multimedia
 * libcprime
+* libcsys
 
 ## Tested In
 * Manjaro xfce (Arch).

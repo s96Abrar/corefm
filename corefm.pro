@@ -9,8 +9,9 @@ QT       += core gui widgets multimedia multimediawidgets dbus
 TARGET = corefm
 TEMPLATE = app
 
-# library for theme
+# library for theme and drive mount
 unix:!macx: LIBS += -lcprime
+unix:!macx: LIBS += -L/usr/lib -lcsys
 
 FORMS += \
     corefm.ui \
@@ -30,7 +31,6 @@ HEADERS += \
     propertiesw.h \
     renamedialog.h \
     tabbar.h \
-    udisks2.h
 
 SOURCES += \
     applicationdialog.cpp \
@@ -46,7 +46,6 @@ SOURCES += \
     propertiesw.cpp \
     renamedialog.cpp \
     tabbar.cpp \
-    udisks2.cpp
 
 RESOURCES += \
     icons.qrc
