@@ -204,6 +204,7 @@ private:
     QItemSelectionModel *listSelectionModel;
     QSocketNotifier *notify;
     QStringList mounts;
+    QStringList pathList;
     QString startPath;
     QList<QIcon> *actionIcons;
     QList<QAction*> *actionList;

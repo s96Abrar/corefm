@@ -203,9 +203,8 @@ void corefm::lateStart()
     connect(ui->viewIcon, SIGNAL(activated(QModelIndex)),this, SLOT(listDoubleClicked(QModelIndex)));
 
     // Connect path edit
-    connect(ui->pathEdit, SIGNAL(activated(QString)),this, SLOT(pathEditChanged(QString)));
     connect(customComplete, SIGNAL(activated(QString)),this, SLOT(pathEditChanged(QString)));
-    connect(ui->pathEdit->lineEdit(), SIGNAL(cursorPositionChanged(int,int)),this, SLOT(addressChanged(int,int)));
+    connect(ui->pathEdit, SIGNAL(cursorPositionChanged(int,int)),this, SLOT(addressChanged(int,int)));
 
     // Connect selection
     connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)),this, SLOT(clipboardChanged()));
@@ -293,13 +292,13 @@ void corefm::closeEvent(QCloseEvent *event)
     writeSettings();
     if (tabs->count() == 0) {
         // Function from utilities.cpp
-        Utilities::saveToRecent("CoreFM", ui->pathEdit->currentText());
+        Utilities::saveToRecent("CoreFM", ui->pathEdit->text());
     }
     else if (tabs->count() > 0) {
         for (int i = 0; i < tabs->count(); i++) {
             tabs->setCurrentIndex(i);
             // Function from utilities.cpp
-            Utilities::saveToRecent("CoreFM", ui->pathEdit->currentText());
+            Utilities::saveToRecent("CoreFM", ui->pathEdit->text());
         }
     }
     modelList->cacheInfo();
@@ -338,11 +337,13 @@ void corefm::treeSelectionChanged(QModelIndex current, QModelIndex previous)
         else ui->viewIcon->setFocus(Qt::TabFocusReason);
     }
 
-    if(curIndex.filePath() != ui->pathEdit->itemText(0))
+    if(curIndex.filePath() != ui->pathEdit->text())
     {
+        // test
         if(tabs->count()) tabs->addHistory(curIndex.filePath());
-        ui->pathEdit->insertItem(0, curIndex.filePath());
-        ui->pathEdit->setCurrentIndex(0);
+        pathList << curIndex.filePath();
+        ui->pathEdit->setText(curIndex.filePath());
+        qDebug()<< pathList;
     }
 
     if(modelList->setRootPath(name.filePath())) modelView->invalidate();
@@ -394,8 +395,8 @@ void corefm::dirLoaded()
     QModelIndexList items;
     bool includeHidden = ui->showHidden->isChecked();
 
-    for(int x = 0; x < modelList->rowCount(modelList->index(ui->pathEdit->currentText())); ++x)
-        items.append(modelList->index(x,0,modelList->index(ui->pathEdit->currentText())));
+    for(int x = 0; x < modelList->rowCount(modelList->index(ui->pathEdit->text())); ++x)
+        items.append(modelList->index(x,0,modelList->index(ui->pathEdit->text())));
 
 
     foreach(QModelIndex theItem,items)
@@ -445,7 +446,7 @@ void corefm::listSelectionChanged(const QItemSelection selected, const QItemSele
     ui->selecteditem->clear();
     if(selectItemCount == 0)
     {
-        curIndex = ui->pathEdit->itemText(0);
+        curIndex = ui->pathEdit->text();
         return;
     }
 
@@ -461,7 +462,7 @@ void corefm::listSelectionChanged(const QItemSelection selected, const QItemSele
        // Function from utilities.cpp
        ui->size->setText(Utilities::formatSize(curIndex.size()));
     }else {
-       ui->name->setText(ui->pathEdit->currentText());
+       ui->name->setText(ui->pathEdit->text());
        ui->size->setText(FileUtils::getMultipleFileSize(selectedFilesPath));
     }
 
@@ -470,7 +471,7 @@ void corefm::listSelectionChanged(const QItemSelection selected, const QItemSele
 
 void corefm::listItemClicked(QModelIndex current)
 {
-    if(modelList->filePath(modelView->mapToSource(current)) == ui->pathEdit->currentText()) return;
+    if(modelList->filePath(modelView->mapToSource(current)) == ui->pathEdit->text()) return;
 
     Qt::KeyboardModifiers mods = QApplication::keyboardModifiers();
     if(mods == Qt::ControlModifier || mods == Qt::ShiftModifier) return;
@@ -497,7 +498,7 @@ void corefm::listItemPressed(QModelIndex current)
 int corefm::addTab(const QString path)
 {
     if (tabs->count() < 4) {
-        if(tabs->count() == 0) tabs->addNewTab(ui->pathEdit->currentText(),currentView);
+        if(tabs->count() == 0) tabs->addNewTab(ui->pathEdit->text(),currentView);
         return tabs->addNewTab(path,currentView);
     } else {
         Utilities::messageEngine("Reached page limite", Utilities::MessageType::Warning);
@@ -510,7 +511,8 @@ void corefm::tabChanged(int index)
     if(tabs->count() == 0) return;
 
     ui->pathEdit->clear();
-    ui->pathEdit->addItems(*tabs->getHistory(index));
+    pathList << *tabs->getHistory(index);
+    qDebug()<< pathList;
 
     if(!tabs->tabData(index).toString().isEmpty())
         ui->viewDir->setCurrentIndex(modelTree->mapFromSource(modelList->index(tabs->tabData(index).toString())));
@@ -1028,7 +1030,7 @@ void corefm::progressFinished(int ret,QStringList newFiles)
 
         qApp->processEvents();              //make sure notifier has added new files to the model
 
-        if(QFileInfo(newFiles.first()).path() == ui->pathEdit->currentText())       //highlight new files if visible
+        if(QFileInfo(newFiles.first()).path() == ui->pathEdit->text())       //highlight new files if visible
         {
             foreach(QString item, newFiles)
                 listSelectionModel->select(modelView->mapFromSource(modelList->index(item)),QItemSelectionModel::Select);
@@ -1156,7 +1158,7 @@ QMenu* corefm::globalmenu(){
     arrageItems->addAction(ui->actionAscending);
 
     //Detect whether this is the Trash folder because menus are different
-    if (ui->pathEdit->currentText() == QDir::homePath() + "/.local/share/Trash/files") { //This is the Trash folder
+    if (ui->pathEdit->text() == QDir::homePath() + "/.local/share/Trash/files") { //This is the Trash folder
         popup->addSection("Nothing");
         return popup;
     }
@@ -1272,7 +1274,7 @@ void corefm::clearCutItems()
     modelList->clearCutItems();
     modelList->update();
 
-    QModelIndex baseIndex = modelView->mapFromSource(modelList->index(ui->pathEdit->currentText()));
+    QModelIndex baseIndex = modelView->mapFromSource(modelList->index(ui->pathEdit->text()));
 
     if(currentView == 2) ui->viewDetail->setRootIndex(baseIndex);
     else ui->viewIcon->setRootIndex(baseIndex);
@@ -1358,7 +1360,7 @@ void corefm::addressChanged(int old, int now)
 {
     Q_UNUSED(old);
     if(!ui->pathEdit->hasFocus()) return;
-    QString temp = ui->pathEdit->currentText();
+    QString temp = ui->pathEdit->text();
 
     if(temp.contains("/."))
         if(!ui->showHidden->isChecked())
@@ -1376,7 +1378,7 @@ void corefm::addressChanged(int old, int now)
     if(temp.length() == now) return;
     int pos = temp.indexOf("/", now);
 
-    ui->pathEdit->lineEdit()->blockSignals(1);
+    ui->pathEdit->blockSignals(1);
 
     if(QApplication::keyboardModifiers() == Qt::ControlModifier)
     {
@@ -1392,13 +1394,13 @@ void corefm::addressChanged(int old, int now)
         ui->viewDir->setCurrentIndex(modelTree->mapFromSource(modelList->index(temp.left(pos))));
     }
     else
-    if(!ui->pathEdit->lineEdit()->hasSelectedText())
+    if(!ui->pathEdit->hasSelectedText())
     {
         ui->pathEdit->completer()->setCompletionPrefix(temp.left(pos) + "/");
         ui->pathEdit->completer()->complete();
     }
 
-    ui->pathEdit->lineEdit()->blockSignals(0);
+    ui->pathEdit->blockSignals(0);
 }
 
 void corefm::zoomInAction()
@@ -1496,7 +1498,7 @@ void corefm::on_actionDelete_triggered()
 
     // Retrieves selection
     if (focusWidget() == ui->viewDir) {
-      selList << modelList->index(ui->pathEdit->itemText(0));
+      selList << modelList->index(ui->pathEdit->text());
     }
     else {
       QModelIndexList proxyList;
@@ -1552,24 +1554,26 @@ void corefm::on_actionDelete_triggered()
 void corefm::on_actionBack_triggered()
 {
     // If there is only one item in path edit, we cannot go back
-    if (ui->pathEdit->count() == 1) return;
+    if (pathList.count() == 1) return;
 
     // Retrieve current index
-    QString current = ui->pathEdit->currentText();
-    if (current.contains(ui->pathEdit->itemText(1))) {
+    QString current = ui->pathEdit->text();
+    if (current.contains(ui->pathEdit->text())) {
       backIndex = modelList->index(current);
     }
 
     // Remove history
-    do {
-      ui->pathEdit->removeItem(0);
-      if (tabs->count()) tabs->remHistory();
-    } while (!QFileInfo(ui->pathEdit->itemText(0)).exists()
-             || ui->pathEdit->itemText(0) == current);
+//    do {
+//      pathList.removeAt(0);
+//      if (tabs->count()) tabs->remHistory();
+//    } while (!QFileInfo(ui->pathEdit->text()).exists() || ui->pathEdit->text() == current);
+
 
     // Sets new dir index
-    QModelIndex i = modelList->index(ui->pathEdit->itemText(0));
+    QModelIndex i = modelList->index(pathList.at(pathList.count()-2));
     ui->viewDir->setCurrentIndex(modelTree->mapFromSource(i));
+
+    qDebug()<<current <<pathList ;
 }
 
 void corefm::on_actionUp_triggered()
@@ -1585,7 +1589,7 @@ void corefm::on_actionCut_triggered()
 
     // Selection
     if (focusWidget() == ui->viewDir) {
-      selList << modelView->mapFromSource(modelList->index(ui->pathEdit->itemText(0)));
+      selList << modelView->mapFromSource(modelList->index(ui->pathEdit->text()));
     } else if (listSelectionModel->selectedRows(0).count()) {
       selList = listSelectionModel->selectedRows(0);
     } else {
@@ -1628,7 +1632,7 @@ void corefm::on_actionCopy_triggered()
 
     if (selList.count() == 0) {
       if (focusWidget() == ui->viewDir) {
-        QModelIndex i = modelList->index(ui->pathEdit->itemText(0));
+        QModelIndex i = modelList->index(ui->pathEdit->text());
         selList << modelView->mapFromSource(i);
       } else {
         return;
@@ -1655,7 +1659,7 @@ void corefm::on_actionPaste_triggered()
     QStringList cutList;
 
     if (curIndex.isDir()) newPath = curIndex.filePath();
-    else newPath = ui->pathEdit->itemText(0);
+    else newPath = ui->pathEdit->text();
 
     // Check ui->viewIcon of files that are to be cut
     QFile tempFile(QDir::tempPath() + "/corefm.temp");
@@ -1697,14 +1701,14 @@ void corefm::on_actionNewFolder_triggered()
 {
     // Check whether current directory is writeable
     QModelIndex newDir;
-    if (!QFileInfo(ui->pathEdit->itemText(0)).isWritable()) {
+    if (!QFileInfo(ui->pathEdit->text()).isWritable()) {
         // Function from utilities.cpp
         Utilities::messageEngine("Read only...cannot create folder", Utilities::MessageType::Warning);
         return;
     }
 
     // Create new directory
-    QModelIndex i = modelList->index(ui->pathEdit->itemText(0));
+    QModelIndex i = modelList->index(ui->pathEdit->text());
     newDir = modelView->mapFromSource(modelList->insertFolder(i));
     listSelectionModel->setCurrentIndex(newDir,QItemSelectionModel::ClearAndSelect);
 
@@ -1717,14 +1721,14 @@ void corefm::on_actionNewTextFile_triggered()
 {
     // Check whether current directory is writeable
     QModelIndex fileIndex;
-    if (!QFileInfo(ui->pathEdit->itemText(0)).isWritable()) {
+    if (!QFileInfo(ui->pathEdit->text()).isWritable()) {
         // Function from utilities.cpp
         Utilities::messageEngine("Read only...cannot create file", Utilities::MessageType::Warning);
         return;
     }
 
     // Create new file
-    QModelIndex i = modelList->index(ui->pathEdit->itemText(0));
+    QModelIndex i = modelList->index(ui->pathEdit->text());
     fileIndex = modelView->mapFromSource(modelList->insertFile(i));
     listSelectionModel->setCurrentIndex(fileIndex,QItemSelectionModel::ClearAndSelect);
 
@@ -1749,8 +1753,8 @@ void corefm::on_actionTerminal_triggered()
 void corefm::setSortColumn(QAction *columnAct)
 {
     // Set root index
-    if (ui->viewIcon->rootIndex() != modelList->index(ui->pathEdit->currentText())) {
-      QModelIndex i = modelList->index(ui->pathEdit->currentText());
+    if (ui->viewIcon->rootIndex() != modelList->index(ui->pathEdit->text())) {
+      QModelIndex i = modelList->index(ui->pathEdit->text());
       ui->viewIcon->setRootIndex(modelView->mapFromSource(i));
     }
 
@@ -1775,8 +1779,8 @@ void corefm::toggleSortBy(QAction *action) //Sets sort column
 
 void corefm::on_actionAscending_triggered(bool checked) //Sets sort order
 {
-    if (ui->viewIcon->rootIndex() != modelList->index(ui->pathEdit->currentText())) {
-      QModelIndex i = modelList->index(ui->pathEdit->currentText());
+    if (ui->viewIcon->rootIndex() != modelList->index(ui->pathEdit->text())) {
+      QModelIndex i = modelList->index(ui->pathEdit->text());
       ui->viewIcon->setRootIndex(modelView->mapFromSource(i));
     }
 
@@ -1904,7 +1908,7 @@ void corefm::on_showHidden_clicked(bool checked)
 
 void corefm::on_searchHere_clicked()
 {
-    const QString folderPath(ui->pathEdit->itemText(0));
+    const QString folderPath(ui->pathEdit->text());
     GlobalFunc::systemAppOpener("Search", folderPath);
 }
 
@@ -2268,7 +2272,7 @@ void corefm::on_actionCoreRenamer_triggered()
 QString corefm::gCurrentPath(int index)
 {
     tabs->setCurrentIndex(index);
-    return ui->pathEdit->currentText();
+    return ui->pathEdit->text();
 }
 
 void corefm::on_viewIcon_customContextMenuRequested(const QPoint &pos)
@@ -2297,8 +2301,8 @@ void corefm::viewMode(bool mode)
     // Icon View
     if(mode){
         // Set root index
-        if (ui->viewIcon->rootIndex() != modelList->index(ui->pathEdit->currentText())) {
-          QModelIndex i = modelList->index(ui->pathEdit->currentText());
+        if (ui->viewIcon->rootIndex() != modelList->index(ui->pathEdit->text())) {
+          QModelIndex i = modelList->index(ui->pathEdit->text());
           ui->viewIcon->setRootIndex(modelView->mapFromSource(i));
         }
 
@@ -2319,7 +2323,7 @@ void corefm::viewMode(bool mode)
     // Detail View
     else {
         // set root index
-        QModelIndex i = modelList->index(ui->pathEdit->currentText());
+        QModelIndex i = modelList->index(ui->pathEdit->text());
         if (ui->viewDetail->rootIndex() != i) {
           ui->viewDetail->setRootIndex(modelView->mapFromSource(i));
         }
@@ -2351,7 +2355,7 @@ void corefm::on_actionCreate_Shortcut_triggered()
     // Should occur problem in future
     QString newPath;
     if (!curIndex.isDir()) newPath = curIndex.filePath();
-    else newPath = ui->pathEdit->itemText(0);
+    else newPath = ui->pathEdit->text();
 
     QModelIndexList selList;
     if (listSelectionModel->selectedRows(0).count()) {
