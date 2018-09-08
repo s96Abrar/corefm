@@ -18,7 +18,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "ui_corefm.h"
 
 
-corefm::corefm(QWidget *parent) :QWidget(parent),ui(new Ui::corefm)
+corefm::corefm(const QString &startPath, QWidget *parent) : QWidget(parent),startPath(startPath),ui(new Ui::corefm)
 {
     ui->setupUi(this);
 
@@ -39,6 +39,7 @@ corefm::corefm(QWidget *parent) :QWidget(parent),ui(new Ui::corefm)
 corefm::~corefm()
 {
     delete ui;
+    pathList.clear();
 }
 
 void corefm::startsetup()
@@ -49,10 +50,12 @@ void corefm::startsetup()
     mimeUtils->setDefaultsFileName(name);
 
     // setup startup path
-    if (sm.getStartupPath().isEmpty()) {
-        startPath = QDir::homePath();
-    } else {
-        startPath = sm.getStartupPath();
+    if (!startPath.count()) {
+        if (sm.getStartupPath().isEmpty()) {
+            startPath = QDir::homePath();
+        } else {
+            startPath = sm.getStartupPath();
+        }
     }
 
     // create filesystem model
@@ -194,6 +197,8 @@ void corefm::lateStart()
 
     // Completer configuration
     customComplete = new myCompleter;
+    // FIX
+    customComplete->popup()->setStyleSheet("background-color: gray;");
     customComplete->setModel(modelTree);
     customComplete->setCompletionMode(QCompleter::UnfilteredPopupCompletion);
     customComplete->setMaxVisibleItems(10);
@@ -341,9 +346,8 @@ void corefm::treeSelectionChanged(QModelIndex current, QModelIndex previous)
     {
         // test
         if(tabs->count()) tabs->addHistory(curIndex.filePath());
-        pathList << curIndex.filePath();
+        pathList.insert(0, curIndex.filePath());
         ui->pathEdit->setText(curIndex.filePath());
-        qDebug()<< pathList;
     }
 
     if(modelList->setRootPath(name.filePath())) modelView->invalidate();
@@ -511,8 +515,8 @@ void corefm::tabChanged(int index)
     if(tabs->count() == 0) return;
 
     ui->pathEdit->clear();
-    pathList << *tabs->getHistory(index);
-    qDebug()<< pathList;
+    pathList.clear();
+    pathList.append( *tabs->getHistory(index) );
 
     if(!tabs->tabData(index).toString().isEmpty())
         ui->viewDir->setCurrentIndex(modelTree->mapFromSource(modelList->index(tabs->tabData(index).toString())));
@@ -1058,7 +1062,7 @@ void corefm::progressFinished(int ret,QStringList newFiles)
  */
 QMenu* corefm::createOpenWithMenu()
 {
-    QMenu *openMenu = new QMenu(tr("Open with"));
+    QMenu *openMenu = new QMenu(tr("Open with"), this);
 
     // Select action
     QAction *selectAppAct = new QAction(tr("Select..."), openMenu);
@@ -1558,22 +1562,22 @@ void corefm::on_actionBack_triggered()
 
     // Retrieve current index
     QString current = ui->pathEdit->text();
-    if (current.contains(ui->pathEdit->text())) {
+    if (current.contains(pathList.at(1))) {
       backIndex = modelList->index(current);
     }
 
     // Remove history
-//    do {
-//      pathList.removeAt(0);
-//      if (tabs->count()) tabs->remHistory();
-//    } while (!QFileInfo(ui->pathEdit->text()).exists() || ui->pathEdit->text() == current);
-
+    do {
+        pathList.removeAt(0);
+        ui->pathEdit->setText(pathList.at(0));
+      if (tabs->count()) tabs->remHistory();
+      if (pathList.count() == 1) break;
+    } while (!(QFileInfo(pathList.at(0)).exists()) || (pathList.at(0) == current));
 
     // Sets new dir index
-    QModelIndex i = modelList->index(pathList.at(pathList.count()-2));
+    QModelIndex i = modelList->index(/*pathList.at(pathList.count()-2)*/ui->pathEdit->text());
     ui->viewDir->setCurrentIndex(modelTree->mapFromSource(i));
 
-    qDebug()<<current <<pathList ;
 }
 
 void corefm::on_actionUp_triggered()
@@ -1807,7 +1811,7 @@ void corefm::executeFile(QModelIndex index, bool run)
     }
 }
 
-void corefm::goTo(const QString path)
+void corefm::goTo(const QString &path)
 {
     if (!path.isEmpty()){
         QModelIndex i = modelTree->mapFromSource(modelList->index(path));
@@ -1964,7 +1968,8 @@ void corefm::blockDevicesChanged()
 
                                     if (parse[1] == "") {
                                         // Function from utilities.cpp
-                                        item = new QListWidgetItem("Drive (" + Utilities::formatSize(static_cast<int>(device->size))+ ")");
+                                        // FIX
+                                        item = new QListWidgetItem("Drive (" + Utilities::formatSize(static_cast<qint64>(device->size)) + ")");
                                         icon = QIcon(":/icons/drive.svg");
                                     } else {
                                         if (parse.count() > 2) {
@@ -1984,7 +1989,8 @@ void corefm::blockDevicesChanged()
 
                     if (!(item)) {
                         // Function from utilities.cpp
-                        item = new QListWidgetItem(Utilities::formatSize(static_cast<int>(device->size)) + " Hard Drive (" + device->fileSystem()->name + ")");
+                        // FIX
+                        item = new QListWidgetItem(Utilities::formatSize(static_cast<qint64>(device->size)) + " Hard Drive (" + device->fileSystem()->name + ")");
                         icon = QIcon(":/icons/drive.svg");
                     }
 
@@ -2381,7 +2387,7 @@ void corefm::on_actionNew_Window_triggered()
 
 void corefm::sendFiles(const QStringList &paths)
 {
-    foreach ( QString str, paths) {
+    foreach ( QString str, paths ) {
         if (QFileInfo(str).isFile()) {
             str = QFileInfo(str).path();
         }
