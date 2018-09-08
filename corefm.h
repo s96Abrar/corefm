@@ -68,13 +68,14 @@ class corefm : public QWidget
     Q_OBJECT
 
 public:
-    explicit corefm(QWidget *parent = nullptr);
+    explicit corefm(const QString &startPath = QDir::homePath(), QWidget *parent = nullptr);
     ~corefm();
 
     void sendFiles(const QStringList &paths);
-    void goTo(const QString path);
+    void goTo(const QString &path);
     QString gCurrentPath(int index);
     myModel *modelList;
+    QString startPath = "";
 
 protected:
     void closeEvent(QCloseEvent *event);
@@ -203,7 +204,6 @@ private:
     QSocketNotifier *notify;
     QStringList mounts;
     QStringList pathList;
-    QString startPath;
     QList<QIcon> *actionIcons;
     QList<QAction*> *actionList;
     QActionGroup *sortByActGrp;

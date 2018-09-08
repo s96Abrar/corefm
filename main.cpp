@@ -71,14 +71,19 @@ int main(int argc, char *argv[])
     QStringList paths;
     foreach (QString arg, args) {
       QFileInfo info(arg);
-      paths.push_back(info.absoluteFilePath());
+      paths.push_back(info.isFile() ? QFileInfo(info.path()).absolutePath() : info.absolutePath());
     }
 
-    corefm e;
+    corefm *e;
     if (paths.count()) {
-        e.sendFiles(paths);
+        e = new corefm(paths.at(0));
+        paths.removeAt(0);
+        if ( paths.count() )
+            e->sendFiles(paths);
+    } else {
+        e = new corefm("");
     }
-    e.show();
+    e->show();
 
     return app.exec();
 }
