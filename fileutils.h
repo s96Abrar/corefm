@@ -22,11 +22,9 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QObject>
 #include <QFileInfo>
 #include <QDirIterator>
-#include <sys/vfs.h>
 #include <QDateTime>
 #include <QFile>
 #include <QDir>
-#include <QFileInfo>
 #include <QProcess>
 #include <QMimeDatabase>
 #include <QMimeType>
@@ -34,6 +32,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <fcntl.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <sys/vfs.h>
 
 #include <cprime/utilities.h>
 #include <cprime/desktopfile.h>
@@ -53,9 +52,7 @@ public:
     static bool removeRecurse(const QString &path, const QString &name);
     static void recurseFolder(const QString &path, const QString &parent,QStringList *list);
     static qint64 totalSize(const QList<QUrl> &files);
-    static QStringList getApplicationNames();
     static QString getRealSuffix(const QString &name);
-    static QIcon searchGenericIcon(const QString &category,const QIcon &defaultIcon = QIcon::fromTheme("unknown"));
     static QIcon searchMimeIcon(QString mime,const QIcon &defaultIcon = QIcon::fromTheme("unknown"));
 
     static QString getFileFolderTree(const QString &path);

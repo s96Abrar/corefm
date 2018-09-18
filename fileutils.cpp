@@ -105,23 +105,6 @@ qint64 FileUtils::totalSize(const QList<QUrl> &files)
 }
 
 /**
- * @brief Returns names of available applications
- * @return application name list
- */
-QStringList FileUtils::getApplicationNames()
-{
-    QStringList appNames;
-    QDirIterator it("/usr/share/applications", QStringList("*.desktop"),
-                    QDir::Files | QDir::NoDotAndDotDot,
-                    QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-      it.next();
-      appNames.append(it.fileName());
-    }
-    return appNames;
-}
-
-/**
  * @brief Returns real suffix for given file
  * @param name
  * @return suffix
@@ -149,21 +132,6 @@ QString FileUtils::getRealSuffix(const QString &name)
 QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon)
 {
     QIcon icon = QIcon::fromTheme(mime.replace("/", "-"));
-    return icon.isNull() ? defaultIcon : icon;
-}
-
-/**
- * @brief Searches for generic icon
- * @param category
- * @return icon
- */
-QIcon FileUtils::searchGenericIcon(const QString &category,const QIcon &defaultIcon)
-{
-    QIcon icon = QIcon::fromTheme(category + "-generic");
-    if (!icon.isNull()) {
-      return icon;
-    }
-    icon = QIcon::fromTheme(category + "-x-generic");
     return icon.isNull() ? defaultIcon : icon;
 }
 

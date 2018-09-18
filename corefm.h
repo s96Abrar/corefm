@@ -27,6 +27,11 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QWidget>
 #include <QSettings>
 #include <QTreeView>
+#include <QDebug>
+#include <QDateTime>
+#include <QtConcurrent/QtConcurrent>
+#include <QShortcut>
+#include <QListWidgetItem>
 #include <QSortFilterProxyModel>
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
@@ -42,12 +47,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QAction>
 #include <sys/vfs.h>
 #include <fcntl.h>
-#include <QDebug>
-#include <QSettings>
-#include <QDateTime>
-#include <QtConcurrent/QtConcurrent>
-#include <QShortcut>
-#include <QListWidgetItem>
 
 #include <cprime/utilities.h>
 #include <cprime/globalfunctions.h>
