@@ -23,9 +23,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "renamedialog.h"
 #include "tabbar.h"
 #include "fileutils.h"
-#include "mimeutils.h"
-#include "applicationdialog.h"
-//#include "udisks2.h"
 
 #include <QWidget>
 #include <QSettings>
@@ -56,6 +53,8 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <cprime/globalfunctions.h>
 #include <cprime/settingsmanage.h>
 #include <cprime/bookmarkdialog.h>
+#include <cprime/applicationdialog.h>
+#include <cprime/desktopfile.h>
 #include <csys/udisks2.h>
 //#include "corearchiver/corearchiver.h"
 
@@ -173,7 +172,6 @@ private:
     void startsetup();
     void recurseFolder(const QString path, QString parent, QStringList *);//delete
     int showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2);
-    QMenu* createOpenWithMenu();
     QMenu *globalmenu();
     QMenu *sendto();
 
@@ -185,7 +183,6 @@ private:
     int currentSortColumn;  // 0=name, 1=size, 3=date
     int selectItemCount = 0;
 
-    MimeUtils *mimeUtils;
     tabBar *tabs;
     myProgressDialog *progress;
     propertiesw *properties;

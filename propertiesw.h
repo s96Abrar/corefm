@@ -19,7 +19,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 
 #include "mymodel.h"
 #include "fileutils.h"
-#include "desktopfile.h"
 
 #include <QWidget>
 #include <QImageReader>
@@ -51,7 +50,6 @@ public slots:
 private slots:
     void on_executableB_clicked(bool checked);
     void detailmedia(QMediaPlayer::MediaStatus status);
-
     void on_hiddenB_clicked(bool checked);
 
 private:
@@ -60,7 +58,6 @@ private:
     QString permString;
     QFileInfo info;
     QMediaPlayer *m_player;
-    DesktopFile appName;
 
     void permission();
     void general();

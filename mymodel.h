@@ -21,10 +21,10 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "fileutils.h"
 
 #include <QtGui>
+#include <QApplication>
 #include <sys/inotify.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
-#include <QApplication>
 
 /**
  * @class myModel

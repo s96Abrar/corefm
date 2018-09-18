@@ -18,14 +18,11 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #define FILEUTILS_H
 
 #include "progressdlg.h"
-#include "desktopfile.h"
-#include "properties.h"
 
 #include <QObject>
 #include <QFileInfo>
 #include <QDirIterator>
 #include <sys/vfs.h>
-
 #include <QDateTime>
 #include <QFile>
 #include <QDir>
@@ -39,6 +36,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <sys/stat.h>
 
 #include <cprime/utilities.h>
+#include <cprime/desktopfile.h>
 
 
 struct SizeAndCountText
@@ -56,11 +54,9 @@ public:
     static void recurseFolder(const QString &path, const QString &parent,QStringList *list);
     static qint64 totalSize(const QList<QUrl> &files);
     static QStringList getApplicationNames();
-    static QList<DesktopFile> getApplications();
     static QString getRealSuffix(const QString &name);
     static QIcon searchGenericIcon(const QString &category,const QIcon &defaultIcon = QIcon::fromTheme("unknown"));
     static QIcon searchMimeIcon(QString mime,const QIcon &defaultIcon = QIcon::fromTheme("unknown"));
-    static QIcon searchAppIcon(const DesktopFile &app,const QIcon &defaultIcon = QIcon::fromTheme("application-x-executable"));
 
     static QString getFileFolderTree(const QString &path);
     static QString getMountPathByName(const QString displayName);

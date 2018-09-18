@@ -19,30 +19,22 @@ FORMS += \
     renamedialog.ui
 
 HEADERS += \
-    applicationdialog.h \
     corefm.h \
-    desktopfile.h \
     fileutils.h \
-    mimeutils.h \
     mymodel.h \
     mymodelitem.h \
     progressdlg.h \
-    properties.h \
     propertiesw.h \
     renamedialog.h \
     tabbar.h \
 
 SOURCES += \
-    applicationdialog.cpp \
     corefm.cpp \
-    desktopfile.cpp \
     fileutils.cpp \
     main.cpp \
-    mimeutils.cpp \
     mymodel.cpp \
     mymodelitem.cpp \
     progressdlg.cpp \
-    properties.cpp \
     propertiesw.cpp \
     renamedialog.cpp \
     tabbar.cpp \
