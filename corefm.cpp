@@ -413,6 +413,7 @@ void corefm::dirLoaded()
         modelList->setMode(true);
         QtConcurrent::run(modelList, &myModel::loadThumbs, items);
     }
+    this->setWindowTitle(curIndex.fileName() + " - CoreFM");
 
     QString currentpath(QDir::homePath() + "/.local/share/Trash/files");
     if((curIndex.absoluteFilePath().compare(currentpath) == 0) && (items.count( ) != 0 )){
