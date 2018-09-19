@@ -1074,16 +1074,62 @@ QMenu* corefm::sendto()
     return sendto;
 }
 
+/**
+ * @brief Creates menu for opening file in selected application
+ * @return menu
+ */
+QMenu* corefm::createOpenWithMenu()
+{
+    MimeUtils *mimeUtils = new MimeUtils();
+    QMenu *openMenu = new QMenu(tr("Open with"));
+
+    // Select action
+    QAction *selectAppAct = new QAction(tr("Select..."), openMenu);
+    connect(selectAppAct, SIGNAL(triggered()), this, SLOT(selectApp()));
+
+    // Load default applications for current mime
+    QMimeDatabase mimetype;
+    QString mime = mimetype.mimeTypeForFile(curIndex.filePath()).name();
+    QStringList appNames = mimeUtils->getDefault(mime);
+
+    // Create actions for opening
+    QList<QAction*> defaultApps;
+    foreach (QString appName, appNames) {
+
+      // Skip empty app name
+      if (appName.isEmpty()) {
+        continue;
+      }
+
+      // fix
+      // Load desktop file for application
+      DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
+
+      // Create action
+      QAction* action = new QAction(df.getName(), openMenu);
+      action->setData(df.getExec());
+      action->setIcon(Utilities::getAppIcon(df.getFileName()));
+      defaultApps.append(action);
+
+      // TODO: icon and connect
+      connect(action, SIGNAL(triggered()), SLOT(openInApp()));
+
+      // Add action to menu
+      openMenu->addAction(action);
+    }
+
+    // Add open action to menu
+    openMenu->addSeparator();
+    openMenu->addAction(selectAppAct);
+    return openMenu;
+}
+
 QMenu* corefm::globalmenu(){
 
     QMenu *popup = new QMenu(this);
     QMenu *subnew = new QMenu(tr("New.."), this);
     QMenu *innew = new QMenu(tr("Open in.."), this);
     QMenu *arrageItems = new QMenu(tr("Arrage Items"), this);
-
-    // Select action
-    QAction *selectAppAct = new QAction(tr("Open With..."));
-    connect(selectAppAct, SIGNAL(triggered()), this, SLOT(selectApp()));
 
     QFile file(curIndex.filePath());
     QMimeDatabase db;
@@ -1129,7 +1175,7 @@ QMenu* corefm::globalmenu(){
     else  if(selectItemCount == 1){
       if(curIndex.isFile()){ // file
           popup->addAction(ui->actionOpen);
-          popup->addAction(selectAppAct);
+          popup->addMenu(createOpenWithMenu());
           popup->addAction(ui->actionRun);
           popup->addSeparator();
           popup->addMenu(sendto());
@@ -1151,7 +1197,7 @@ QMenu* corefm::globalmenu(){
       if(curIndex.isDir()){ // folder
           popup->addAction(ui->actionOpen);
           popup->addMenu(innew);
-          popup->addAction(selectAppAct);
+          popup->addMenu(createOpenWithMenu());
           popup->addSeparator();
           popup->addMenu(sendto());
           popup->addSeparator();
@@ -1700,7 +1746,7 @@ void corefm::on_actionNewPage_triggered()
 
 void corefm::on_actionTerminal_triggered()
 {
-    GlobalFunc::appEngine(GlobalFunc::Category::Terminal,curIndex.filePath());
+    GlobalFunc::appEngine(GlobalFunc::Category::Terminal,curIndex,this);
 }
 
 void corefm::setSortColumn(QAction *columnAct)
@@ -1756,7 +1802,7 @@ void corefm::executeFile(QModelIndex index, bool run)
         const QString path = modelList->filePath(srcIndex);
         QProcess::startDetached("xdg-open", QStringList() << path);
     } else if (run == false) {
-        GlobalFunc::appSelectionEngine(curIndex.filePath());
+        GlobalFunc::appSelectionEngine(curIndex.filePath(),this);
     }
 }
 

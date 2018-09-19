@@ -204,6 +204,7 @@ private:
     QList<QAction*> *actionList;
     QActionGroup *sortByActGrp;
     QAction *sortNameAct,*sortDateAct,*sortSizeAct,*sortAscAct;
+    QMenu *createOpenWithMenu();
 };
 
 //---------------------------------------------------------------------------------
