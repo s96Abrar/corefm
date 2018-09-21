@@ -105,40 +105,6 @@ qint64 FileUtils::totalSize(const QList<QUrl> &files)
 }
 
 /**
- * @brief Returns names of available applications
- * @return application name list
- */
-QStringList FileUtils::getApplicationNames()
-{
-    QStringList appNames;
-    QDirIterator it("/usr/share/applications", QStringList("*.desktop"),
-                    QDir::Files | QDir::NoDotAndDotDot,
-                    QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-      it.next();
-      appNames.append(it.fileName());
-    }
-    return appNames;
-}
-
-/**
- * @brief Returns list of available applications
- * @return application list
- */
-QList<DesktopFile> FileUtils::getApplications()
-{
-    QList<DesktopFile> apps;
-    QDirIterator it("/usr/share/applications", QStringList("*.desktop"),
-                    QDir::Files | QDir::NoDotAndDotDot,
-                    QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-      it.next();
-      apps.append(DesktopFile(it.filePath()));
-    }
-    return apps;
-}
-
-/**
  * @brief Returns real suffix for given file
  * @param name
  * @return suffix
@@ -167,65 +133,6 @@ QIcon FileUtils::searchMimeIcon(QString mime, const QIcon &defaultIcon)
 {
     QIcon icon = QIcon::fromTheme(mime.replace("/", "-"));
     return icon.isNull() ? defaultIcon : icon;
-}
-
-/**
- * @brief Searches for generic icon
- * @param category
- * @return icon
- */
-QIcon FileUtils::searchGenericIcon(const QString &category,const QIcon &defaultIcon)
-{
-    QIcon icon = QIcon::fromTheme(category + "-generic");
-    if (!icon.isNull()) {
-      return icon;
-    }
-    icon = QIcon::fromTheme(category + "-x-generic");
-    return icon.isNull() ? defaultIcon : icon;
-}
-
-/**
- * @brief Searches for application icon in the filesystem
- * @param app
- * @param defaultIcon
- * @return icon
- */
-QIcon FileUtils::searchAppIcon(const DesktopFile &app,const QIcon &defaultIcon)
-{
-    // Resulting icon
-    QIcon icon;
-
-    // First attempt, check whether icon is a valid file
-    if (QFile(app.getIcon()).exists()) {
-      icon = QIcon(app.getIcon());
-      if (!icon.isNull()) {
-        return icon;
-      }
-    }
-
-    // Second attempt, try load icon from theme
-    icon = QIcon::fromTheme(app.getIcon());
-    if (!icon.isNull()) {
-      return icon;
-    }
-
-    // Next, try luck with application name
-    QString name = app.getFileName().remove(".desktop").split("/").last();
-    icon = QIcon::fromTheme(name);
-    if (!icon.isNull()) {
-      return icon;
-    }
-
-    // Last chance
-    QDir appIcons("/usr/share/pixmaps","", nullptr, QDir::Files | QDir::NoDotAndDotDot);
-    QStringList iconFiles = appIcons.entryList();
-    QStringList searchIcons = iconFiles.filter(name);
-    if (searchIcons.count() > 0) {
-      return QIcon("/usr/share/pixmaps/" + searchIcons.at(0));
-    }
-
-    // Default icon
-    return defaultIcon;
 }
 
 QString FileUtils::getFileFolderTree(const QString &path)

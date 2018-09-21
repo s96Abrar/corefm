@@ -21,7 +21,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QDialog>
 #include <QLabel>
 #include <QProgressBar>
-#include <QtGui>
 #include <QPushButton>
 #include <QGridLayout>
 
@@ -44,9 +43,7 @@ private:
     QLabel *transferInfo;
     QProgressBar *bar;
     QPushButton *button;
-
     QTime  *remainingTimer;
-
     qint64 runningTotal;
     int oldSeconds;
 

@@ -23,13 +23,15 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "renamedialog.h"
 #include "tabbar.h"
 #include "fileutils.h"
-#include "mimeutils.h"
-#include "applicationdialog.h"
-//#include "udisks2.h"
 
 #include <QWidget>
 #include <QSettings>
 #include <QTreeView>
+#include <QDebug>
+#include <QDateTime>
+#include <QtConcurrent/QtConcurrent>
+#include <QShortcut>
+#include <QListWidgetItem>
 #include <QSortFilterProxyModel>
 #include <QSignalMapper>
 #include <QFileSystemWatcher>
@@ -45,17 +47,13 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QAction>
 #include <sys/vfs.h>
 #include <fcntl.h>
-#include <QDebug>
-#include <QSettings>
-#include <QDateTime>
-#include <QtConcurrent/QtConcurrent>
-#include <QShortcut>
-#include <QListWidgetItem>
 
 #include <cprime/utilities.h>
 #include <cprime/globalfunctions.h>
 #include <cprime/settingsmanage.h>
 #include <cprime/bookmarkdialog.h>
+#include <cprime/applicationdialog.h>
+#include <cprime/desktopfile.h>
 #include <csys/udisks2.h>
 //#include "corearchiver/corearchiver.h"
 
@@ -173,7 +171,6 @@ private:
     void startsetup();
     void recurseFolder(const QString path, QString parent, QStringList *);//delete
     int showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2);
-    QMenu* createOpenWithMenu();
     QMenu *globalmenu();
     QMenu *sendto();
 
@@ -185,7 +182,6 @@ private:
     int currentSortColumn;  // 0=name, 1=size, 3=date
     int selectItemCount = 0;
 
-    MimeUtils *mimeUtils;
     tabBar *tabs;
     myProgressDialog *progress;
     propertiesw *properties;
@@ -208,6 +204,7 @@ private:
     QList<QAction*> *actionList;
     QActionGroup *sortByActGrp;
     QAction *sortNameAct,*sortDateAct,*sortSizeAct,*sortAscAct;
+    QMenu *createOpenWithMenu();
 };
 
 //---------------------------------------------------------------------------------

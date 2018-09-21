@@ -44,11 +44,6 @@ corefm::~corefm()
 
 void corefm::startsetup()
 {
-    // create mime utils
-    mimeUtils = new MimeUtils(this);
-    QString name = "/.config/coreBox/mimeapps.list";
-    mimeUtils->setDefaultsFileName(name);
-
     // setup startup path
     if (!startPath.count()) {
         if (sm.getStartupPath().isEmpty()) {
@@ -250,8 +245,6 @@ void corefm::lateStart()
     }
     modelView->sort(currentSortColumn,currentSortOrder);
 
-    // Read defaults
-    QTimer::singleShot(100, mimeUtils, SLOT(generateDefaults()));
     on_actionRefresh_triggered();
 }
 
@@ -420,6 +413,7 @@ void corefm::dirLoaded()
         modelList->setMode(true);
         QtConcurrent::run(modelList, &myModel::loadThumbs, items);
     }
+    this->setWindowTitle(curIndex.fileName() + " - CoreFM");
 
     QString currentpath(QDir::homePath() + "/.local/share/Trash/files");
     if((curIndex.absoluteFilePath().compare(currentpath) == 0) && (items.count( ) != 0 )){
@@ -943,7 +937,6 @@ bool corefm::cutCopyFile(const QString &src, QString dst, qint64 totalSize,bool 
 
     if (dstFile.size() != total) return 0;
     if (cut) srcFile.remove();  // if file is cut remove the source
-//    qDebug()<< "cutCopyFile";
     return 1;
 }
 
@@ -1055,55 +1048,6 @@ void corefm::progressFinished(int ret,QStringList newFiles)
     if ( ret == 2 ) Utilities::messageEngine( "Too big!\nThere is not enough space!", Utilities::MessageType::Warning );
 }
 
-
-/**
- * @brief Creates menu for opening file in selected application
- * @return menu
- */
-QMenu* corefm::createOpenWithMenu()
-{
-    QMenu *openMenu = new QMenu(tr("Open with"), this);
-
-    // Select action
-    QAction *selectAppAct = new QAction(tr("Select..."), openMenu);
-    connect(selectAppAct, SIGNAL(triggered()), this, SLOT(selectApp()));
-
-    // Load default applications for current mime
-    QMimeDatabase mimetype;
-    QString mime = mimetype.mimeTypeForFile(curIndex.filePath()).name();
-    QStringList appNames = mimeUtils->getDefault(mime);
-
-    // Create actions for opening
-    QList<QAction*> defaultApps;
-    foreach (QString appName, appNames) {
-
-      // Skip empty app name
-      if (appName.isEmpty()) {
-        continue;
-      }
-
-      // Load desktop file for application
-      DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
-
-      // Create action
-      QAction* action = new QAction(df.getName(), openMenu);
-      action->setData(df.getExec());
-      action->setIcon(FileUtils::searchAppIcon(df));
-      defaultApps.append(action);
-
-      // TODO: icon and connect
-      connect(action, SIGNAL(triggered()), SLOT(openInApp()));
-
-      // Add action to menu
-      openMenu->addAction(action);
-    }
-
-    // Add open action to menu
-    openMenu->addSeparator();
-    openMenu->addAction(selectAppAct);
-    return openMenu;
-}
-
 QMenu* corefm::sendto()
 {
     QMenu *sendto = new QMenu(tr("Send to.."), this);
@@ -1128,6 +1072,56 @@ QMenu* corefm::sendto()
     sendto->addAction(shortcut);
 
     return sendto;
+}
+
+/**
+ * @brief Creates menu for opening file in selected application
+ * @return menu
+ */
+QMenu* corefm::createOpenWithMenu()
+{
+    MimeUtils *mimeUtils = new MimeUtils();
+    QMenu *openMenu = new QMenu(tr("Open with"));
+
+    // Select action
+    QAction *selectAppAct = new QAction(tr("Select..."), openMenu);
+    connect(selectAppAct, SIGNAL(triggered()), this, SLOT(selectApp()));
+
+    // Load default applications for current mime
+    QMimeDatabase mimetype;
+    QString mime = mimetype.mimeTypeForFile(curIndex.filePath()).name();
+    QStringList appNames = mimeUtils->getDefault(mime);
+
+    // Create actions for opening
+    QList<QAction*> defaultApps;
+    foreach (QString appName, appNames) {
+
+      // Skip empty app name
+      if (appName.isEmpty()) {
+        continue;
+      }
+
+      // fix
+      // Load desktop file for application
+      DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
+
+      // Create action
+      QAction* action = new QAction(df.getName(), openMenu);
+      action->setData(df.getExec());
+      action->setIcon(Utilities::getAppIcon(df.getFileName()));
+      defaultApps.append(action);
+
+      // TODO: icon and connect
+      connect(action, SIGNAL(triggered()), SLOT(openInApp()));
+
+      // Add action to menu
+      openMenu->addAction(action);
+    }
+
+    // Add open action to menu
+    openMenu->addSeparator();
+    openMenu->addAction(selectAppAct);
+    return openMenu;
 }
 
 QMenu* corefm::globalmenu(){
@@ -1161,7 +1155,7 @@ QMenu* corefm::globalmenu(){
     arrageItems->addSeparator();
     arrageItems->addAction(ui->actionAscending);
 
-    //Detect whether this is the Trash folder because menus are different
+    //Detect whether this is the Trash folder because menus are different there
     if (ui->pathEdit->text() == QDir::homePath() + "/.local/share/Trash/files") { //This is the Trash folder
         popup->addSection("Nothing");
         return popup;
@@ -1254,9 +1248,10 @@ void corefm::selectApp()
     ApplicationDialog *dialog = new ApplicationDialog(this);
     if (dialog->exec()) {
       if (dialog->getCurrentLauncher().compare("") != 0) {
-        QString appName = dialog->getCurrentLauncher() + ".desktop";
-        DesktopFile df = DesktopFile("/usr/share/applications/" + appName);
-        mimeUtils->openInApp(df.getExec(), curIndex, this);
+        GlobalFunc::systemAppOpener(dialog->getCurrentLauncher(), curIndex.filePath());
+
+        // Function from utilities.cpp
+        Utilities::saveToRecent(dialog->getCurrentLauncher(), curIndex.filePath());
       }
     }
 }
@@ -1268,7 +1263,7 @@ void corefm::openInApp()
 {
     QAction* action = dynamic_cast<QAction*>(sender());
     if (action) {
-      mimeUtils->openInApp(action->data().toString(), curIndex, this);
+        GlobalFunc::systemAppOpener(action->data().toString(), curIndex.filePath());
     }
 }
 
@@ -1751,7 +1746,7 @@ void corefm::on_actionNewPage_triggered()
 
 void corefm::on_actionTerminal_triggered()
 {
-    GlobalFunc::appEngine(GlobalFunc::Category::Terminal,curIndex.filePath());
+    GlobalFunc::appEngine(GlobalFunc::Category::Terminal,curIndex,this);
 }
 
 void corefm::setSortColumn(QAction *columnAct)
@@ -1807,7 +1802,7 @@ void corefm::executeFile(QModelIndex index, bool run)
         const QString path = modelList->filePath(srcIndex);
         QProcess::startDetached("xdg-open", QStringList() << path);
     } else if (run == false) {
-        mimeUtils->openInApp(modelList->fileInfo(srcIndex), this);
+        GlobalFunc::appSelectionEngine(curIndex.filePath(),this);
     }
 }
 

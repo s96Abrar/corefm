@@ -4,6 +4,6 @@ Comment=CoreFM is a filemanager from CoreApps.
 Exec=corefm %F
 Icon=/usr/share/coreapps/icons/CoreFM.svg
 Type=Application
-Categories=Utility;Core;Qt;System;
+Categories=Utility;Qt;FileTools;FileManager;
 Terminal=false
 StartupNotify=true
