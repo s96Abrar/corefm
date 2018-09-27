@@ -17,7 +17,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #ifndef PROGRESSDLG_H
 #define PROGRESSDLG_H
 
-#include <QtGui>
 #include <QDialog>
 #include <QLabel>
 #include <QProgressBar>

@@ -17,6 +17,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "corefm.h"
 #include "ui_corefm.h"
 
+#include <QDebug>
 
 corefm::corefm(const QString &startPath, QWidget *parent) : QWidget(parent),startPath(startPath),ui(new Ui::corefm)
 {
@@ -26,8 +27,8 @@ corefm::corefm(const QString &startPath, QWidget *parent) : QWidget(parent),star
     setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::CoreFMStyle));
 
     // set window size
-    int x = static_cast<int>(Utilities::screensize().width()  * .8);
-    int y = static_cast<int>(Utilities::screensize().height()  * .7);
+    int x = static_cast<int>(Utilities::screensize().width() * .8);
+    int y = static_cast<int>(Utilities::screensize().height() * .7);
     this->resize(x, y);
 
     startsetup();
@@ -44,6 +45,9 @@ corefm::~corefm()
 
 void corefm::startsetup()
 {
+    // Create mimeutils
+    mimeUtils = new MimeUtils(this);
+
     // setup startup path
     if (!startPath.count()) {
         if (sm.getStartupPath().isEmpty()) {
@@ -244,6 +248,9 @@ void corefm::lateStart()
       case 3 : setSortColumn(ui->actionDate); break;
     }
     modelView->sort(currentSortColumn,currentSortOrder);
+
+    // Load defaults mime list
+    QTimer::singleShot(100, mimeUtils, SLOT(generateDefaults()));
 
     on_actionRefresh_triggered();
 }
@@ -1080,8 +1087,7 @@ QMenu* corefm::sendto()
  */
 QMenu* corefm::createOpenWithMenu()
 {
-    MimeUtils *mimeUtils = new MimeUtils();
-    QMenu *openMenu = new QMenu(tr("Open with"));
+    QMenu *openMenu = new QMenu(tr("Open with"), this);
 
     // Select action
     QAction *selectAppAct = new QAction(tr("Select..."), openMenu);
@@ -1246,6 +1252,7 @@ void corefm::selectApp()
 {
     // Select application in the dialog
     ApplicationDialog *dialog = new ApplicationDialog(this);
+    dialog->getApplications();
     if (dialog->exec()) {
       if (dialog->getCurrentLauncher().compare("") != 0) {
         GlobalFunc::systemAppOpener(dialog->getCurrentLauncher(), curIndex.filePath());
@@ -1746,7 +1753,7 @@ void corefm::on_actionNewPage_triggered()
 
 void corefm::on_actionTerminal_triggered()
 {
-    GlobalFunc::appEngine(GlobalFunc::Category::Terminal,curIndex,this);
+    GlobalFunc::appEngine(GlobalFunc::Category::Terminal, curIndex,this);
 }
 
 void corefm::setSortColumn(QAction *columnAct)
@@ -2368,7 +2375,7 @@ void corefm::on_actionCreate_Shortcut_triggered()
     QApplication::clipboard()->setText(newPath, QClipboard::Selection);
     QApplication::clipboard()->setMimeData(modelView->mimeData(selList));
 
-    linkFiles(QApplication::clipboard()->mimeData()->urls(), QFileInfo(newPath).path());
+    qDebug() << linkFiles(QApplication::clipboard()->mimeData()->urls(), QFileInfo(newPath).path());
 }
 
 void corefm::on_actionNew_Window_triggered()
