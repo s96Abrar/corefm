@@ -27,7 +27,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <QWidget>
 #include <QSettings>
 #include <QTreeView>
-#include <QDebug>
 #include <QDateTime>
 #include <QtConcurrent/QtConcurrent>
 #include <QShortcut>
@@ -55,6 +54,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <cprime/applicationdialog.h>
 #include <cprime/desktopfile.h>
 #include <csys/udisks2.h>
+#include <cprime/mimeutils.h>
 //#include "corearchiver/corearchiver.h"
 
 namespace Ui {
@@ -182,6 +182,7 @@ private:
     int currentSortColumn;  // 0=name, 1=size, 3=date
     int selectItemCount = 0;
 
+    MimeUtils *mimeUtils;
     tabBar *tabs;
     myProgressDialog *progress;
     propertiesw *properties;

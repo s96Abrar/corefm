@@ -10,7 +10,7 @@ TARGET = corefm
 TEMPLATE = app
 
 # library for theme and drive mount
-unix:!macx: LIBS += -lcprime
+unix:!macx: LIBS += -L/usr/lib -lcprime
 unix:!macx: LIBS += -L/usr/lib -lcsys
 
 FORMS += \

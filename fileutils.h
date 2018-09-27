@@ -33,6 +33,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <dirent.h>
 #include <sys/stat.h>
 #include <sys/vfs.h>
+#include <QUrl>
 
 #include <cprime/utilities.h>
 #include <cprime/desktopfile.h>

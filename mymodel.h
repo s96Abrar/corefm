@@ -20,7 +20,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "mymodelitem.h"
 #include "fileutils.h"
 
-#include <QtGui>
+#include <QSocketNotifier>
 #include <QApplication>
 #include <sys/inotify.h>
 #include <unistd.h>

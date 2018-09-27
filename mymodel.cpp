@@ -15,6 +15,12 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, see {http://www.gnu.org/licenses/}. */
 
 #include "mymodel.h"
+#include <QCache>
+#include <QMimeData>
+#include <QImageReader>
+#include <QImageWriter>
+#include <QPainter>
+#include <QBuffer>
 
 /**
  * @brief Creates file system model
