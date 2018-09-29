@@ -28,7 +28,6 @@ renameDialog::renameDialog(QFileInfo iFile,QWidget *parent):QDialog(parent),ui(n
     m_iFile = iFile;
     setWindowFlags(Qt::Dialog | Qt::Popup);
     setAttribute(Qt::WA_NativeWindow);
-    setWindowIcon(QIcon(":/icons/CoreFM.svg"));
     setWindowTitle("Rename \"" + m_iFile.fileName() + "\"");
     ui->newName->setText(m_iFile.fileName());
     connect(ui->cancel, &QToolButton::clicked, this, &renameDialog::close);

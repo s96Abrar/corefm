@@ -21,8 +21,8 @@
         <file>icons/up.svg</file>
         <file>icons/view_icon.svg</file>
         <file>icons/view_list.svg</file>
-        <file>icons/CoreFM.svg</file>
         <file>icons/new_page.svg</file>
         <file>icons/close.svg</file>
+        <file>icons/corefm.svg</file>
     </qresource>
 </RCC>

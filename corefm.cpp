@@ -17,7 +17,6 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "corefm.h"
 #include "ui_corefm.h"
 
-#include <QDebug>
 
 corefm::corefm(const QString &startPath, QWidget *parent) : QWidget(parent),startPath(startPath),ui(new Ui::corefm)
 {
@@ -1270,7 +1269,8 @@ void corefm::openInApp()
 {
     QAction* action = dynamic_cast<QAction*>(sender());
     if (action) {
-        GlobalFunc::systemAppOpener(action->data().toString(), curIndex.filePath());
+        MimeUtils *mimeUtils = new MimeUtils();
+        mimeUtils->openInApp(action->data().toString(), curIndex.filePath(),this);
     }
 }
 
