@@ -21,7 +21,7 @@ myProgressDialog::myProgressDialog(QString title)
 {
    setWindowTitle(title);
    setWindowIcon(QIcon(":/icons/corefm.svg"));
-   setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+   setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
 
 
    filename = new QLabel(tr("Initializing..."));

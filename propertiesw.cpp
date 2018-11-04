@@ -24,11 +24,11 @@ propertiesw::propertiesw(const QString paths,QWidget *parent) :QWidget(parent),u
     ui->setupUi(this);
 
     // set stylesheet from style.qrc
-    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::PropertiesStyle));
+    setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::PropertiesStyle));
 
     // set window size
-    int x = static_cast<int>(Utilities::screensize().width()  * .27);
-    int y = static_cast<int>(Utilities::screensize().height()  * .6);
+    int x = static_cast<int>(CPrime::InfoFunc::screenSize().width()  * .27);
+    int y = static_cast<int>(CPrime::InfoFunc::screenSize().height()  * .6);
     this->resize(x, y);
 
     pathName = paths;
@@ -59,7 +59,7 @@ void propertiesw::general()
 
     this->setWindowTitle("Properties - " + info.fileName() );
 
-    ui->fileTitle->setIcon(Utilities::getFileIcon(info.filePath()));
+    ui->fileTitle->setIcon(CPrime::ThemeFunc::getFileIcon(info.filePath()));
 
     if(info.isFile()){
         ui->type->setText(littleinfo + " , " + extrainfo );
@@ -153,8 +153,8 @@ void propertiesw::permission()
 void propertiesw::partition(const QString path)
 {
     // Function from utilities.cpp
-    QString t = Utilities::formatSize(QStorageInfo(path).bytesTotal());
-    QString f = Utilities::formatSize(QStorageInfo(path).bytesFree());
+    QString t = CPrime::FileFunc::formatSize(static_cast<quint64>(QStorageInfo(path).bytesTotal()));
+    QString f = CPrime::FileFunc::formatSize(static_cast<quint64>(QStorageInfo(path).bytesFree()));
 //    QString s = QString::number((double) t - f);
 
     ui->sizefree->setText("Free : " + f);
@@ -240,12 +240,12 @@ void propertiesw::detailimage(const QString imagepath)
     QStringList right;
     left << "Name" << "Size" << "Type" << "Dimensions" << "Bitplane Count"
          << "Width" << "Height" ;
-    right << info.fileName() << Utilities::formatSize(info.size()) << info.suffix().toUpper() // Function from utilities.cpp
+    right << info.fileName() << CPrime::FileFunc::formatSize(static_cast<quint64>(info.size())) << info.suffix().toUpper() // Function from utilities.cpp
           << QString::number(image.width()) + " x "+ QString::number(image.height())
           << QString::number(image.bitPlaneCount()) << QString::number(image.width()) + " pixels"
           << QString::number(image.height()) + " pixels" ;
 
-    QStringListModel *infoModel = new QStringListModel(Utilities::fStringList(left, right, ui->detail->font()));
+    QStringListModel *infoModel = new QStringListModel(CPrime::StringFunc::fStringList(left, right, ui->detail->font()));
     ui->detail->setModel(infoModel);
     ui->detail->setFocusPolicy(Qt::NoFocus);
 }
@@ -275,7 +275,7 @@ void propertiesw::detailmedia(QMediaPlayer::MediaStatus status)
         left << "Duration";
         right << QString::number(static_cast<double>(pi)) + " mins";
 
-        QStringListModel *infoModel = new QStringListModel(Utilities::fStringList(left, right, ui->detail->font()));
+        QStringListModel *infoModel = new QStringListModel(CPrime::StringFunc::fStringList(left, right, ui->detail->font()));
         ui->detail->setModel(infoModel);
         ui->detail->setFocusPolicy(Qt::NoFocus);
     }

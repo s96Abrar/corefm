@@ -23,7 +23,7 @@ renameDialog::renameDialog(QFileInfo iFile,QWidget *parent):QDialog(parent),ui(n
     ui->setupUi(this);
 
     // set stylesheet from style.qrc
-    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+    setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
 
     m_iFile = iFile;
     setWindowFlags(Qt::Dialog | Qt::Popup);
@@ -52,10 +52,10 @@ void renameDialog::on_done_clicked()
 {
     if (ui->newName->text().count()) {
         if (QFile::rename(m_iFile.filePath(), m_iFile.path() + "/" + ui->newName->text())) {
-            Utilities::messageEngine("File Renamed Successfully.", Utilities::MessageType::Info);
+            CPrime::InfoFunc::messageEngine("File Renamed Successfully.", CPrime::MessageType::Info,this);
             close();
         } else {
-            Utilities::messageEngine("File not Renamed.", Utilities::MessageType::Warning);
+            CPrime::InfoFunc::messageEngine("File not Renamed.", CPrime::MessageType::Warning,this);
             close();
         }
     }

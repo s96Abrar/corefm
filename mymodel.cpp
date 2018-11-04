@@ -715,7 +715,7 @@ QVariant myModel::data(const QModelIndex & index, int role) const
         data = item->fileName();
         break;
       case 1 :
-        data = item->fileInfo().isDir() ? "" : Utilities::formatSize(item->fileInfo().size());
+        data = item->fileInfo().isDir() ? "" : CPrime::FileFunc::formatSize(item->fileInfo().size());
         break;
       case 2 :
         if (item->mMimeType.isNull()) {

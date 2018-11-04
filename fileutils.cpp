@@ -269,7 +269,7 @@ SizeAndCountText FileUtils::getF(const QStringList &paths)
 
     SizeAndCountText sc;
     sc.countText = QString("%1 Files, %2 Folders").arg(files).arg(folders);
-    sc.sizeText = Utilities::formatSize(totalSize);
+    sc.sizeText = CPrime::FileFunc::formatSize(static_cast<quint64>(totalSize));
     sc.hiddenFileCount = QString("%1 Hidden Files").arg(hfCount);
     return sc;
 }

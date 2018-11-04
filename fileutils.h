@@ -35,7 +35,7 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <sys/vfs.h>
 #include <QUrl>
 
-#include <cprime/utilities.h>
+#include <cprime/appopenfunc.h>
 #include <cprime/desktopfile.h>
 
 

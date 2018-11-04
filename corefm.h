@@ -47,14 +47,15 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include <sys/vfs.h>
 #include <fcntl.h>
 
-#include <cprime/utilities.h>
-#include <cprime/globalfunctions.h>
+#include <cprime/themefunc.h>
+#include <cprime/appopenfunc.h>
 #include <cprime/settingsmanage.h>
 #include <cprime/bookmarkdialog.h>
 #include <cprime/applicationdialog.h>
 #include <cprime/desktopfile.h>
-#include <csys/udisks2.h>
+#include <cprime/trashmanager.h>
 #include <cprime/mimeutils.h>
+#include <csys/udisks2.h>
 //#include "corearchiver/corearchiver.h"
 
 namespace Ui {
