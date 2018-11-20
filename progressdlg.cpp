@@ -20,8 +20,8 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 myProgressDialog::myProgressDialog(QString title)
 {
    setWindowTitle(title);
-   setWindowIcon(QIcon(":/icons/CoreFM.svg"));
-   setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+   setWindowIcon(QIcon(":/icons/corefm.svg"));
+   setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
 
 
    filename = new QLabel(tr("Initializing..."));

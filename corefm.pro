@@ -71,10 +71,10 @@ unix {
         target.path = $$BINDIR
 
         desktop.path = $$PREFIX/share/applications/
-        desktop.files = "CoreFM.desktop"
+        desktop.files = "corefm.desktop"
 
         icons.path = $$PREFIX/share/coreapps/icons/
-        icons.files = icons/CoreFM.svg
+        icons.files = icons/corefm.svg
 
         INSTALLS += target icons desktop
 }

@@ -17,18 +17,17 @@ along with this program; if not, see {http://www.gnu.org/licenses/}. */
 #include "corefm.h"
 #include "ui_corefm.h"
 
-#include <QDebug>
 
 corefm::corefm(const QString &startPath, QWidget *parent) : QWidget(parent),startPath(startPath),ui(new Ui::corefm)
 {
     ui->setupUi(this);
 
     // set stylesheet from style.qrc
-    setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::CoreFMStyle));
+    setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::CoreFMStyle));
 
     // set window size
-    int x = static_cast<int>(Utilities::screensize().width() * .8);
-    int y = static_cast<int>(Utilities::screensize().height() * .7);
+    int x = static_cast<int>(CPrime::InfoFunc::screenSize().width()  * .8);
+    int y = static_cast<int>(CPrime::InfoFunc::screenSize().height()  * .7);
     this->resize(x, y);
 
     startsetup();
@@ -297,13 +296,13 @@ void corefm::closeEvent(QCloseEvent *event)
     writeSettings();
     if (tabs->count() == 0) {
         // Function from utilities.cpp
-        Utilities::saveToRecent("CoreFM", ui->pathEdit->text());
+        CPrime::InfoFunc::saveToRecent("CoreFM", ui->pathEdit->text());
     }
     else if (tabs->count() > 0) {
         for (int i = 0; i < tabs->count(); i++) {
             tabs->setCurrentIndex(i);
             // Function from utilities.cpp
-            Utilities::saveToRecent("CoreFM", ui->pathEdit->text());
+            CPrime::InfoFunc::saveToRecent("CoreFM", ui->pathEdit->text());
         }
     }
     modelList->cacheInfo();
@@ -415,7 +414,7 @@ void corefm::dirLoaded()
     ui->selecteditem->clear();
     selectItemCount = 0;
 
-    if ( items.count( ) == 0 ) { Utilities::messageEngine( "Folder is empty", Utilities::MessageType::Info ) ; }
+    if ( items.count( ) == 0 ) { CPrime::InfoFunc::messageEngine( "Folder is empty", CPrime::MessageType::Info,this ) ; }
     if(ui->showthumb->isChecked()) {
         modelList->setMode(true);
         QtConcurrent::run(modelList, &myModel::loadThumbs, items);
@@ -465,7 +464,7 @@ void corefm::listSelectionChanged(const QItemSelection selected, const QItemSele
     if (selectItemCount == 1) {
        ui->name->setText(curIndex.fileName());
        // Function from utilities.cpp
-       ui->size->setText(Utilities::formatSize(curIndex.size()));
+       ui->size->setText(CPrime::FileFunc::formatSize(static_cast<quint64>(curIndex.size())));
     }else {
        ui->name->setText(ui->pathEdit->text());
        ui->size->setText(FileUtils::getMultipleFileSize(selectedFilesPath));
@@ -506,7 +505,7 @@ int corefm::addTab(const QString path)
         if(tabs->count() == 0) tabs->addNewTab(ui->pathEdit->text(),currentView);
         return tabs->addNewTab(path,currentView);
     } else {
-        Utilities::messageEngine("Reached page limite", Utilities::MessageType::Warning);
+        CPrime::InfoFunc::messageEngine("Reached page limite", CPrime::MessageType::Warning,this);
     }
     return -1;
 }
@@ -536,7 +535,7 @@ void corefm::listDoubleClicked(QModelIndex current)
 
     QString trashPath(QDir::homePath() + "/.local/share/Trash/files");
     if(curIndex.path() == trashPath){
-        Utilities::messageEngine("Trash files not accessible", Utilities::MessageType::Info);
+        CPrime::InfoFunc::messageEngine("Trash files not accessible", CPrime::MessageType::Info,this);
         return;
     }
 
@@ -590,8 +589,8 @@ void corefm::dragLauncher(const QMimeData *data, const QString &newPath,myModel:
     if (dragMode == myModel::DM_UNKNOWN) {
       QMessageBox box;
       box.setWindowTitle(tr("What do you want to do?"));
-      box.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
-      box.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+      box.setWindowIcon(QIcon(":/icons/corefm.svg"));
+      box.setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
       QAbstractButton *move = box.addButton(tr("Move here"), QMessageBox::ActionRole);
       QAbstractButton *copy = box.addButton(tr("Copy here"), QMessageBox::ActionRole);
       QAbstractButton *link = box.addButton(tr("Link here"), QMessageBox::ActionRole);
@@ -645,7 +644,7 @@ void corefm::pasteLauncher(const QList<QUrl> &files, const QString &newPath,cons
     // File no longer exists?
     if (!QFile(files.at(0).path()).exists()) {
       QString msg = tr("File '%1' no longer exists!").arg(files.at(0).path());
-      Utilities::messageEngine(msg, Utilities::MessageType::Info);
+      CPrime::InfoFunc::messageEngine(msg, CPrime::MessageType::Info,this);
       ui->actionPaste->setEnabled(0);
       ui->paste->setVisible(0);
       return;
@@ -667,8 +666,8 @@ void corefm::pasteLauncher(const QList<QUrl> &files, const QString &newPath,cons
         if (temp.isDir() && QFileInfo(newPath + QDir::separator() + temp.fileName()).exists()) {
           QString msg = QString("<b>%1</b><p>Already exists!<p>What do you want to do?").arg(newPath + QDir::separator() + temp.fileName());
           QMessageBox message(QMessageBox::Question, tr("Existing folder"), msg, QMessageBox::Yes | QMessageBox::No | QMessageBox::Cancel);
-          message.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
-          message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+          message.setWindowIcon(QIcon(":/icons/corefm.svg"));
+          message.setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
           message.button(QMessageBox::Yes)->setText(tr("Merge"));
           message.button(QMessageBox::No)->setText(tr("Replace"));
 
@@ -1013,8 +1012,8 @@ int corefm::showReplaceMsgBox(const QFileInfo &f1, const QFileInfo &f2)
     QMessageBox message(QMessageBox::Question, tr("Replace"), t, QMessageBox::Yes
                                  | QMessageBox::YesToAll | QMessageBox::No
                                  | QMessageBox::NoToAll | QMessageBox::Cancel);
-    message.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
-    message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+    message.setWindowIcon(QIcon(":/icons/corefm.svg"));
+    message.setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
 
     return message.exec();
 }
@@ -1051,8 +1050,8 @@ void corefm::progressFinished(int ret,QStringList newFiles)
         clearCutItems();
     }
 
-    if ( ret == 1 ) Utilities::messageEngine( "Paste failed\nDo you have write permissions?", Utilities::MessageType::Warning );
-    if ( ret == 2 ) Utilities::messageEngine( "Too big!\nThere is not enough space!", Utilities::MessageType::Warning );
+    if ( ret == 1 ) CPrime::InfoFunc::messageEngine( "Paste failed\nDo you have write permissions?", CPrime::MessageType::Warning,this );
+    if ( ret == 2 ) CPrime::InfoFunc::messageEngine( "Too big!\nThere is not enough space!", CPrime::MessageType::Warning,this );
 }
 
 QMenu* corefm::sendto()
@@ -1114,7 +1113,7 @@ QMenu* corefm::createOpenWithMenu()
       // Create action
       QAction* action = new QAction(df.getName(), openMenu);
       action->setData(df.getExec());
-      action->setIcon(Utilities::getAppIcon(df.getFileName()));
+      action->setIcon(CPrime::ThemeFunc::getAppIcon(df.getFileName()));
       defaultApps.append(action);
 
       // TODO: icon and connect
@@ -1255,10 +1254,10 @@ void corefm::selectApp()
     dialog->getApplications();
     if (dialog->exec()) {
       if (dialog->getCurrentLauncher().compare("") != 0) {
-        GlobalFunc::systemAppOpener(dialog->getCurrentLauncher(), curIndex.filePath());
+        CPrime::AppOpenFunc::systemAppOpener(dialog->getCurrentLauncher(), curIndex.filePath());
 
         // Function from utilities.cpp
-        Utilities::saveToRecent(dialog->getCurrentLauncher(), curIndex.filePath());
+        CPrime::InfoFunc::saveToRecent(dialog->getCurrentLauncher(), curIndex.filePath());
       }
     }
 }
@@ -1270,7 +1269,8 @@ void corefm::openInApp()
 {
     QAction* action = dynamic_cast<QAction*>(sender());
     if (action) {
-        GlobalFunc::systemAppOpener(action->data().toString(), curIndex.filePath());
+        MimeUtils *mimeUtils = new MimeUtils();
+        mimeUtils->openInApp(action->data().toString(), curIndex.filePath(),this);
     }
 }
 
@@ -1444,7 +1444,7 @@ void corefm::zoomInAction()
     }
 
     // Function from utilities.cpp
-    Utilities::messageEngine( QString( tr( "Zoom: %1" ) ).arg( zoomLevel ), Utilities::MessageType::Info);
+    CPrime::InfoFunc::messageEngine( QString( tr( "Zoom: %1" ) ).arg( zoomLevel ), CPrime::MessageType::Info,this);
 }
 
 void corefm::zoomOutAction()
@@ -1482,7 +1482,7 @@ void corefm::zoomOutAction()
     }
 
     // Function from utilities.cpp
-    Utilities::messageEngine(QString(tr("Zoom: %1")).arg(zoomLevel), Utilities::MessageType::Info);
+    CPrime::InfoFunc::messageEngine(QString(tr("Zoom: %1")).arg(zoomLevel), CPrime::MessageType::Info,this);
 }
 
 void corefm::on_actionRename_triggered()
@@ -1533,8 +1533,8 @@ void corefm::on_actionDelete_triggered()
               QString title = tr("Careful");
               QString msg = tr("Are you sure you want to delete <p><b>\"") + file.filePath() + "</b>?";
               QMessageBox message(QMessageBox::Question, title, msg,QMessageBox::Yes | QMessageBox::No | QMessageBox::YesToAll);
-              message.setWindowIcon(QIcon(":/icons/CoreFM.svg"));
-              message.setStyleSheet(Utilities::getStylesheetFileContent(Utilities::StyleAppName::DialogStyle));
+              message.setWindowIcon(QIcon(":/icons/corefm.svg"));
+              message.setStyleSheet(CPrime::ThemeFunc::getStyleSheetFileContent(CPrime::StyleTypeName::DialogStyle));
               int ret = message.exec();
               if (ret == QMessageBox::YesToAll) yesToAll = true;
               if (ret == QMessageBox::No) return;
@@ -1551,7 +1551,7 @@ void corefm::on_actionDelete_triggered()
     if(!ok) {
         // Function from utilities.cpp
         QString msg = tr("Could not delete some items...do you have the permissions?");
-        Utilities::messageEngine(msg, Utilities::MessageType::Warning);
+        CPrime::InfoFunc::messageEngine(msg, CPrime::MessageType::Warning,this);
     }
 
     return;
@@ -1623,7 +1623,7 @@ void corefm::on_actionCut_triggered()
     listSelectionModel->clear();
     ui->paste->setVisible(true);
     // Function from utilities.cpp
-    Utilities::messageEngine("File moves successfully.", Utilities::MessageType::Info);
+    CPrime::InfoFunc::messageEngine("File moves successfully.", CPrime::MessageType::Info,this);
 }
 
 void corefm::on_actionCopy_triggered()
@@ -1680,7 +1680,7 @@ void corefm::on_actionPaste_triggered()
     on_actionRefresh_triggered();
     QApplication::clipboard()->clear();
     // Function from utilities.cpp
-    Utilities::messageEngine("Paste Completed.", Utilities::MessageType::Info);
+    CPrime::InfoFunc::messageEngine("Paste Completed.", CPrime::MessageType::Info,this);
 }
 
 void corefm::on_actionProperties_triggered()
@@ -1709,7 +1709,7 @@ void corefm::on_actionNewFolder_triggered()
     QModelIndex newDir;
     if (!QFileInfo(ui->pathEdit->text()).isWritable()) {
         // Function from utilities.cpp
-        Utilities::messageEngine("Read only...cannot create folder", Utilities::MessageType::Warning);
+        CPrime::InfoFunc::messageEngine("Read only...cannot create folder", CPrime::MessageType::Warning,this);
         return;
     }
 
@@ -1729,7 +1729,7 @@ void corefm::on_actionNewTextFile_triggered()
     QModelIndex fileIndex;
     if (!QFileInfo(ui->pathEdit->text()).isWritable()) {
         // Function from utilities.cpp
-        Utilities::messageEngine("Read only...cannot create file", Utilities::MessageType::Warning);
+        CPrime::InfoFunc::messageEngine("Read only...cannot create file", CPrime::MessageType::Warning,this);
         return;
     }
 
@@ -1753,7 +1753,7 @@ void corefm::on_actionNewPage_triggered()
 
 void corefm::on_actionTerminal_triggered()
 {
-    GlobalFunc::appEngine(GlobalFunc::Category::Terminal, curIndex,this);
+    CPrime::AppOpenFunc::appEngine(CPrime::Category::Terminal, curIndex,this);
 }
 
 void corefm::setSortColumn(QAction *columnAct)
@@ -1809,7 +1809,7 @@ void corefm::executeFile(QModelIndex index, bool run)
         const QString path = modelList->filePath(srcIndex);
         QProcess::startDetached("xdg-open", QStringList() << path);
     } else if (run == false) {
-        GlobalFunc::appSelectionEngine(curIndex.filePath(),this);
+        CPrime::AppOpenFunc::appSelectionEngine(curIndex.filePath(),this);
     }
 }
 
@@ -1891,7 +1891,7 @@ void corefm::on_actionTrash_it_triggered()
 {
     if (selectItemCount != 0) {
         // Function from utilities.cpp
-        Utilities::moveToTrash(QStringList() << curIndex.filePath());
+        CPrime::TrashManager::moveToTrash(QStringList() << curIndex.filePath());
         on_actionRefresh_triggered();
     }
 }
@@ -1915,7 +1915,7 @@ void corefm::on_showHidden_clicked(bool checked)
 void corefm::on_searchHere_clicked()
 {
     const QString folderPath(ui->pathEdit->text());
-    GlobalFunc::systemAppOpener("Search", folderPath);
+    CPrime::AppOpenFunc::systemAppOpener("Search", folderPath);
 }
 
 void corefm::on_actionExtract_Here_triggered()
@@ -1971,7 +1971,7 @@ void corefm::blockDevicesChanged()
                                     if (parse[1] == "") {
                                         // Function from utilities.cpp
                                         // FIX
-                                        item = new QListWidgetItem("Drive (" + Utilities::formatSize(static_cast<qint64>(device->size)) + ")");
+                                        item = new QListWidgetItem("Drive (" + CPrime::FileFunc::formatSize(static_cast<quint64>(device->size)) + ")");
                                         icon = QIcon(":/icons/drive.svg");
                                     } else {
                                         if (parse.count() > 2) {
@@ -1992,7 +1992,7 @@ void corefm::blockDevicesChanged()
                     if (!(item)) {
                         // Function from utilities.cpp
                         // FIX
-                        item = new QListWidgetItem(Utilities::formatSize(static_cast<qint64>(device->size)) + " Hard Drive (" + device->fileSystem()->name + ")");
+                        item = new QListWidgetItem(CPrime::FileFunc::formatSize(static_cast<quint64>(device->size)) + " Hard Drive (" + device->fileSystem()->name + ")");
                         icon = QIcon(":/icons/drive.svg");
                     }
 
@@ -2182,7 +2182,7 @@ void corefm::on_partitions_itemClicked(QListWidgetItem *item)
             }
             if (mountpoint == "") {
                 // Function from utilities.cpp
-                Utilities::messageEngine("Couldn't mount " + udisks->blockDevice(dev)->dev, Utilities::MessageType::Warning);
+                CPrime::InfoFunc::messageEngine("Couldn't mount " + udisks->blockDevice(dev)->dev, CPrime::MessageType::Warning,this);
             }
             else {
                 goTo(mountpoint);
@@ -2207,7 +2207,7 @@ void corefm::on_actionDesktop_triggered()
     on_actionRefresh_triggered();
 
     // Function from utilities.cpp
-    Utilities::messageEngine("Send Completed.", Utilities::MessageType::Info);
+    CPrime::InfoFunc::messageEngine("Send Completed.", CPrime::MessageType::Info,this);
 }
 
 void corefm::on_actionHome_triggered()
@@ -2222,7 +2222,7 @@ void corefm::on_actionHome_triggered()
     on_actionRefresh_triggered();
 
     // Function from utilities.cpp
-    Utilities::messageEngine("send Completed.", Utilities::MessageType::Info);
+    CPrime::InfoFunc::messageEngine("send Completed.", CPrime::MessageType::Info,this);
 }
 
 void corefm::on_actionRun_triggered()
@@ -2245,7 +2245,7 @@ void corefm::sendToPath()
         on_actionRefresh_triggered();
 
         // Function from utilities.cpp
-        Utilities::messageEngine("send Completed.", Utilities::MessageType::Info);
+        CPrime::InfoFunc::messageEngine("send Completed.", CPrime::MessageType::Info,this);
     }
 }
 
@@ -2274,7 +2274,7 @@ void corefm::on_action_Rename_triggered()
 void corefm::on_actionCoreRenamer_triggered()
 {
     const QString path(curIndex.filePath());
-    GlobalFunc::systemAppOpener("CoreRenamer", path);
+    CPrime::AppOpenFunc::systemAppOpener("CoreRenamer", path);
 }
 
 QString corefm::gCurrentPath(int index)
@@ -2382,7 +2382,7 @@ void corefm::on_actionNew_Window_triggered()
 {
     QString arg(curIndex.filePath());
     corefm *app = new corefm();
-    QString str = Utilities::checkIsValidDir(arg);
+    QString str = CPrime::ValidityFunc::checkIsValidDir(arg);
     if (!str.isEmpty() || !str.isNull()) app->goTo(str);
     app->show();
 }
